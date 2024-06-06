@@ -14,7 +14,6 @@
 
 from __future__ import annotations
 import pprint
-import re  # noqa: F401
 import json
 
 from pydantic import BaseModel, ConfigDict, StrictStr
@@ -24,9 +23,9 @@ from typing import Optional, Set
 from typing_extensions import Self
 
 
-class SearchResultDto(BaseModel):
+class SearchResult(BaseModel):
     """
-    SearchResultDto
+    SearchResult
     """  # noqa: E501
 
     id: StrictStr

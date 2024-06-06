@@ -19,27 +19,33 @@ import json
 
 from pydantic import BaseModel, ConfigDict, Field, StrictStr
 from typing import Any, ClassVar, Dict, List, Optional
-from tada_ai.models.search_query_chunk_options_input import SearchQueryChunkOptionsInput
-from tada_ai.models.search_query_reranker_options_input import SearchQueryRerankerOptionsInput
+from tada_ai.models.chunk_options import ChunkOptions
+from tada_ai.models.reranker_options import RerankerOptions
 from typing import Optional, Set
 from typing_extensions import Self
+
 
 class SearchQueryInput(BaseModel):
     """
     SearchQueryInput
-    """ # noqa: E501
+    """  # noqa: E501
+
     prompt: StrictStr
     space_id: Optional[StrictStr] = Field(default=None, alias="spaceId")
-    chunk_options: Optional[SearchQueryChunkOptionsInput] = Field(default=None, alias="chunkOptions")
-    reranker: Optional[SearchQueryRerankerOptionsInput] = None
-    __properties: ClassVar[List[str]] = ["prompt", "spaceId", "chunkOptions", "reranker"]
+    chunk_options: Optional[ChunkOptions] = Field(default=None, alias="chunkOptions")
+    reranker: Optional[RerankerOptions] = None
+    __properties: ClassVar[List[str]] = [
+        "prompt",
+        "spaceId",
+        "chunkOptions",
+        "reranker",
+    ]
 
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -65,8 +71,7 @@ class SearchQueryInput(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([
-        ])
+        excluded_fields: Set[str] = set([])
 
         _dict = self.model_dump(
             by_alias=True,
@@ -75,10 +80,10 @@ class SearchQueryInput(BaseModel):
         )
         # override the default output from pydantic by calling `to_dict()` of chunk_options
         if self.chunk_options:
-            _dict['chunkOptions'] = self.chunk_options.to_dict()
+            _dict["chunkOptions"] = self.chunk_options.to_dict()
         # override the default output from pydantic by calling `to_dict()` of reranker
         if self.reranker:
-            _dict['reranker'] = self.reranker.to_dict()
+            _dict["reranker"] = self.reranker.to_dict()
         return _dict
 
     @classmethod
@@ -90,12 +95,20 @@ class SearchQueryInput(BaseModel):
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({
-            "prompt": obj.get("prompt"),
-            "spaceId": obj.get("spaceId"),
-            "chunkOptions": SearchQueryChunkOptionsInput.from_dict(obj["chunkOptions"]) if obj.get("chunkOptions") is not None else None,
-            "reranker": SearchQueryRerankerOptionsInput.from_dict(obj["reranker"]) if obj.get("reranker") is not None else None
-        })
+        _obj = cls.model_validate(
+            {
+                "prompt": obj.get("prompt"),
+                "spaceId": obj.get("spaceId"),
+                "chunkOptions": (
+                    ChunkOptions.from_dict(obj["chunkOptions"])
+                    if obj.get("chunkOptions") is not None
+                    else None
+                ),
+                "reranker": (
+                    RerankerOptions.from_dict(obj["reranker"])
+                    if obj.get("reranker") is not None
+                    else None
+                ),
+            }
+        )
         return _obj
-
-

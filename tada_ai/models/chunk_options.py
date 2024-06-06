@@ -17,25 +17,37 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict
-from typing import Any, ClassVar, Dict, List
-from tada_ai.models.space import Space
+from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
+from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SpaceListDto(BaseModel):
+
+class ChunkOptions(BaseModel):
     """
-    SpaceListDto
-    """ # noqa: E501
-    data: List[Space]
-    __properties: ClassVar[List[str]] = ["data"]
+    QueryChunkOptions
+    """  # noqa: E501
+
+    requested_min_word_count: Optional[Union[StrictFloat, StrictInt]] = Field(
+        default=50,
+        description="Will attempt to keep the minimum chunk size to less than the provided amount. NOTE: This is not guaranteed. Please validate if your system requires a minimum or maximum size.",
+        alias="requestedMinWordCount",
+    )
+    requested_max_word_count: Optional[Union[StrictFloat, StrictInt]] = Field(
+        default=1500,
+        description="Will attempt to keep the maximum chunk size to less than the provided amount. NOTE: This is not guaranteed. Please validate if your system requires a minimum or maximum size.",
+        alias="requestedMaxWordCount",
+    )
+    __properties: ClassVar[List[str]] = [
+        "requestedMinWordCount",
+        "requestedMaxWordCount",
+    ]
 
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -48,7 +60,7 @@ class SpaceListDto(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SpaceListDto from a JSON string"""
+        """Create an instance of SearchQueryChunkOptionsInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -61,35 +73,36 @@ class SpaceListDto(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([
-        ])
+        excluded_fields: Set[str] = set([])
 
         _dict = self.model_dump(
             by_alias=True,
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in data (list)
-        _items = []
-        if self.data:
-            for _item in self.data:
-                if _item:
-                    _items.append(_item.to_dict())
-            _dict['data'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SpaceListDto from a dict"""
+        """Create an instance of SearchQueryChunkOptionsInput from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({
-            "data": [Space.from_dict(_item) for _item in obj["data"]] if obj.get("data") is not None else None
-        })
+        _obj = cls.model_validate(
+            {
+                "requestedMinWordCount": (
+                    obj.get("requestedMinWordCount")
+                    if obj.get("requestedMinWordCount") is not None
+                    else 50
+                ),
+                "requestedMaxWordCount": (
+                    obj.get("requestedMaxWordCount")
+                    if obj.get("requestedMaxWordCount") is not None
+                    else 1500
+                ),
+            }
+        )
         return _obj
-
-

@@ -17,26 +17,26 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt
-from typing import Any, ClassVar, Dict, List, Optional, Union
+from pydantic import BaseModel, ConfigDict
+from typing import Any, ClassVar, Dict, List
+from tada_ai.models.space_file import SpaceFile
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SearchQueryRerankerOptionsInput(BaseModel):
+
+class SpaceFilesList(BaseModel):
     """
-    SearchQueryRerankerOptionsInput
-    """ # noqa: E501
-    use_reranker: Optional[StrictBool] = Field(default=False, description="Turns the reranker on or off.", alias="useReranker")
-    top_n: Optional[Union[StrictFloat, StrictInt]] = Field(default=10, description="The largest number of chunks to return from re-ranking", alias="topN")
-    threshold: Optional[Union[StrictFloat, StrictInt]] = Field(default=0.25, description="The minimum threshold for a chunk")
-    __properties: ClassVar[List[str]] = ["useReranker", "topN", "threshold"]
+    SpaceFilesList
+    """  # noqa: E501
+
+    data: List[SpaceFile]
+    __properties: ClassVar[List[str]] = ["data"]
 
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -49,7 +49,7 @@ class SearchQueryRerankerOptionsInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SearchQueryRerankerOptionsInput from a JSON string"""
+        """Create an instance of SpaceFilesListDto from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -62,30 +62,38 @@ class SearchQueryRerankerOptionsInput(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([
-        ])
+        excluded_fields: Set[str] = set([])
 
         _dict = self.model_dump(
             by_alias=True,
             exclude=excluded_fields,
             exclude_none=True,
         )
+        # override the default output from pydantic by calling `to_dict()` of each item in data (list)
+        _items = []
+        if self.data:
+            for _item in self.data:
+                if _item:
+                    _items.append(_item.to_dict())
+            _dict["data"] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SearchQueryRerankerOptionsInput from a dict"""
+        """Create an instance of SpaceFilesListDto from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({
-            "useReranker": obj.get("useReranker") if obj.get("useReranker") is not None else False,
-            "topN": obj.get("topN") if obj.get("topN") is not None else 10,
-            "threshold": obj.get("threshold") if obj.get("threshold") is not None else 0.25
-        })
+        _obj = cls.model_validate(
+            {
+                "data": (
+                    [SpaceFile.from_dict(_item) for _item in obj["data"]]
+                    if obj.get("data") is not None
+                    else None
+                )
+            }
+        )
         return _obj
-
-

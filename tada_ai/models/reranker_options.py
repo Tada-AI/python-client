@@ -17,25 +17,35 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, Field, StrictFloat, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictFloat, StrictInt
 from typing import Any, ClassVar, Dict, List, Optional, Union
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SearchQueryChunkOptionsInput(BaseModel):
+
+class RerankerOptions(BaseModel):
     """
-    SearchQueryChunkOptionsInput
-    """ # noqa: E501
-    requested_min_word_count: Optional[Union[StrictFloat, StrictInt]] = Field(default=50, description="Will attempt to keep the minimum chunk size to less than the provided amount. NOTE: This is not guaranteed. Please validate if your system requires a minimum or maximum size.", alias="requestedMinWordCount")
-    requested_max_word_count: Optional[Union[StrictFloat, StrictInt]] = Field(default=1500, description="Will attempt to keep the maximum chunk size to less than the provided amount. NOTE: This is not guaranteed. Please validate if your system requires a minimum or maximum size.", alias="requestedMaxWordCount")
-    __properties: ClassVar[List[str]] = ["requestedMinWordCount", "requestedMaxWordCount"]
+    SearchQueryRerankerOptionsInput
+    """  # noqa: E501
+
+    use_reranker: Optional[StrictBool] = Field(
+        default=True, description="Turns the reranker on or off.", alias="useReranker"
+    )
+    top_n: Optional[Union[StrictFloat, StrictInt]] = Field(
+        default=10,
+        description="The largest number of chunks to return from re-ranking",
+        alias="topN",
+    )
+    threshold: Optional[Union[StrictFloat, StrictInt]] = Field(
+        default=0.25, description="The minimum threshold for a chunk"
+    )
+    __properties: ClassVar[List[str]] = ["useReranker", "topN", "threshold"]
 
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -48,7 +58,7 @@ class SearchQueryChunkOptionsInput(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SearchQueryChunkOptionsInput from a JSON string"""
+        """Create an instance of SearchQueryRerankerOptionsInput from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -61,8 +71,7 @@ class SearchQueryChunkOptionsInput(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([
-        ])
+        excluded_fields: Set[str] = set([])
 
         _dict = self.model_dump(
             by_alias=True,
@@ -73,17 +82,24 @@ class SearchQueryChunkOptionsInput(BaseModel):
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SearchQueryChunkOptionsInput from a dict"""
+        """Create an instance of SearchQueryRerankerOptionsInput from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({
-            "requestedMinWordCount": obj.get("requestedMinWordCount") if obj.get("requestedMinWordCount") is not None else 50,
-            "requestedMaxWordCount": obj.get("requestedMaxWordCount") if obj.get("requestedMaxWordCount") is not None else 1500
-        })
+        _obj = cls.model_validate(
+            {
+                "useReranker": (
+                    obj.get("useReranker")
+                    if obj.get("useReranker") is not None
+                    else False
+                ),
+                "topN": obj.get("topN") if obj.get("topN") is not None else 10,
+                "threshold": (
+                    obj.get("threshold") if obj.get("threshold") is not None else 0.25
+                ),
+            }
+        )
         return _obj
-
-

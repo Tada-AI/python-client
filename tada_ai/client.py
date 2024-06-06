@@ -3,16 +3,16 @@ from typing import Optional
 import typing
 import requests
 from tada_ai.exceptions import ApiException
-from tada_ai.models.search_query_chunk_options_input import SearchQueryChunkOptionsInput
+from tada_ai.models.chunk_options import ChunkOptions
 from tada_ai.models.search_query_input import SearchQueryInput
-from tada_ai.models.search_query_reranker_options_input import (
-    SearchQueryRerankerOptionsInput,
+from tada_ai.models.reranker_options import (
+    RerankerOptions,
 )
-from tada_ai.models.search_result_dto import SearchResultDto
+from tada_ai.models.search_result import SearchResult
 from tada_ai.models.space import Space
 from tada_ai.models.space_file import SpaceFile
-from tada_ai.models.space_files_list_dto import SpaceFilesListDto
-from tada_ai.models.space_list_dto import SpaceListDto
+from tada_ai.models.space_files_list import SpaceFilesList
+from tada_ai.models.space_list import SpaceList
 
 DEFAULT_BASE_URL = "https://api.tadatoday.ai/api"
 
@@ -47,15 +47,15 @@ class TadaAIClient(BaseService):
         prompt: str,
         *,
         space_id: str | None = None,
-        reranker: SearchQueryRerankerOptionsInput | bool = False,
-        chunks: Optional[SearchQueryChunkOptionsInput] = None,
+        reranker: RerankerOptions | bool = True,
+        chunks: Optional[ChunkOptions] = None,
     ):
         url = self._url("search")
 
         if reranker == False:
             rerankerOptions = None
         elif reranker == True:
-            rerankerOptions = SearchQueryRerankerOptionsInput(useReranker=True)
+            rerankerOptions = RerankerOptions(useReranker=True)
         else:
             rerankerOptions = reranker
 
@@ -75,7 +75,7 @@ class TadaAIClient(BaseService):
                 http_resp=response, body=response.text, data=None
             )
 
-        return SearchResultDto.model_validate_json(response.text)
+        return SearchResult.model_validate_json(response.text)
 
     @property
     def spaces(self):
@@ -113,7 +113,7 @@ class SpaceFileService(BaseService):
                 http_resp=response, body=response.text, data=None
             )
 
-        return SpaceFilesListDto.model_validate_json(response.text)
+        return SpaceFilesList.model_validate_json(response.text)
 
     def create(self, space_id: str, file: typing.BinaryIO, path: str, mime_type: str):
         url = self._url("spaces", space_id, "files")
@@ -176,7 +176,7 @@ class SpaceService(BaseService):
                 http_resp=response, body=response.text, data=None
             )
 
-        return SpaceListDto.model_validate_json(response.text)
+        return SpaceList.model_validate_json(response.text)
 
 
 def _join_url(base_url: str, *path_items: str):

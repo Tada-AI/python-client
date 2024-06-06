@@ -19,15 +19,17 @@ import json
 
 from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from tada_ai.models.space_file import SpaceFile
+from tada_ai.models.space import Space
 from typing import Optional, Set
 from typing_extensions import Self
 
-class SpaceFilesListDto(BaseModel):
+
+class SpaceList(BaseModel):
     """
-    SpaceFilesListDto
-    """ # noqa: E501
-    data: List[SpaceFile]
+    SpaceList
+    """  # noqa: E501
+
+    data: List[Space]
     __properties: ClassVar[List[str]] = ["data"]
 
     model_config = ConfigDict(
@@ -35,7 +37,6 @@ class SpaceFilesListDto(BaseModel):
         validate_assignment=True,
         protected_namespaces=(),
     )
-
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -48,7 +49,7 @@ class SpaceFilesListDto(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SpaceFilesListDto from a JSON string"""
+        """Create an instance of SpaceListDto from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -61,8 +62,7 @@ class SpaceFilesListDto(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([
-        ])
+        excluded_fields: Set[str] = set([])
 
         _dict = self.model_dump(
             by_alias=True,
@@ -75,21 +75,25 @@ class SpaceFilesListDto(BaseModel):
             for _item in self.data:
                 if _item:
                     _items.append(_item.to_dict())
-            _dict['data'] = _items
+            _dict["data"] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SpaceFilesListDto from a dict"""
+        """Create an instance of SpaceListDto from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate({
-            "data": [SpaceFile.from_dict(_item) for _item in obj["data"]] if obj.get("data") is not None else None
-        })
+        _obj = cls.model_validate(
+            {
+                "data": (
+                    [Space.from_dict(_item) for _item in obj["data"]]
+                    if obj.get("data") is not None
+                    else None
+                )
+            }
+        )
         return _obj
-
-

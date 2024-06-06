@@ -15,11 +15,11 @@ from typing import Any, Optional
 from typing_extensions import Self
 
 
-class ApiException(Exception):
+class ApiError(Exception):
     """The base exception class for all OpenAPIExceptions"""
 
 
-class ApiTypeError(ApiException, TypeError):
+class ApiTypeError(ApiError, TypeError):
     def __init__(
         self, msg, path_to_item=None, valid_classes=None, key_type=None
     ) -> None:
@@ -49,7 +49,7 @@ class ApiTypeError(ApiException, TypeError):
         super(ApiTypeError, self).__init__(full_msg)
 
 
-class ApiValueError(ApiException, ValueError):
+class ApiValueError(ApiError, ValueError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Args:
@@ -67,7 +67,7 @@ class ApiValueError(ApiException, ValueError):
         super(ApiValueError, self).__init__(full_msg)
 
 
-class ApiAttributeError(ApiException, AttributeError):
+class ApiAttributeError(ApiError, AttributeError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Raised when an attribute reference or assignment fails.
@@ -86,7 +86,7 @@ class ApiAttributeError(ApiException, AttributeError):
         super(ApiAttributeError, self).__init__(full_msg)
 
 
-class ApiKeyError(ApiException, KeyError):
+class ApiKeyError(ApiError, KeyError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Args:
@@ -103,7 +103,7 @@ class ApiKeyError(ApiException, KeyError):
         super(ApiKeyError, self).__init__(full_msg)
 
 
-class ApiException(ApiException):
+class ApiException(ApiError):
 
     def __init__(
         self,
