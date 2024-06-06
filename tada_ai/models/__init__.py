@@ -22,3 +22,5 @@ from tada_ai.models.search_record_chunk import SearchRecordChunk
 from tada_ai.models.search_result_dto import SearchResultDto
 from tada_ai.models.space import Space
 from tada_ai.models.space_file import SpaceFile
+from tada_ai.models.space_files_list_dto import SpaceFilesListDto
+from tada_ai.models.space_list_dto import SpaceListDto

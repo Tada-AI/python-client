@@ -14,14 +14,16 @@
 from typing import Any, Optional
 from typing_extensions import Self
 
-class OpenApiException(Exception):
+
+class ApiException(Exception):
     """The base exception class for all OpenAPIExceptions"""
 
 
-class ApiTypeError(OpenApiException, TypeError):
-    def __init__(self, msg, path_to_item=None, valid_classes=None,
-                 key_type=None) -> None:
-        """ Raises an exception for TypeErrors
+class ApiTypeError(ApiException, TypeError):
+    def __init__(
+        self, msg, path_to_item=None, valid_classes=None, key_type=None
+    ) -> None:
+        """Raises an exception for TypeErrors
 
         Args:
             msg (str): the exception message
@@ -47,7 +49,7 @@ class ApiTypeError(OpenApiException, TypeError):
         super(ApiTypeError, self).__init__(full_msg)
 
 
-class ApiValueError(OpenApiException, ValueError):
+class ApiValueError(ApiException, ValueError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Args:
@@ -65,7 +67,7 @@ class ApiValueError(OpenApiException, ValueError):
         super(ApiValueError, self).__init__(full_msg)
 
 
-class ApiAttributeError(OpenApiException, AttributeError):
+class ApiAttributeError(ApiException, AttributeError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Raised when an attribute reference or assignment fails.
@@ -84,7 +86,7 @@ class ApiAttributeError(OpenApiException, AttributeError):
         super(ApiAttributeError, self).__init__(full_msg)
 
 
-class ApiKeyError(OpenApiException, KeyError):
+class ApiKeyError(ApiException, KeyError):
     def __init__(self, msg, path_to_item=None) -> None:
         """
         Args:
@@ -101,66 +103,64 @@ class ApiKeyError(OpenApiException, KeyError):
         super(ApiKeyError, self).__init__(full_msg)
 
 
-class ApiException(OpenApiException):
+class ApiException(ApiException):
 
     def __init__(
-        self, 
-        status=None, 
-        reason=None, 
+        self,
+        status=None,
+        reason=None,
         http_resp=None,
         *,
         body: Optional[str] = None,
         data: Optional[Any] = None,
     ) -> None:
-        self.status = status
+        self.status_code = status
         self.reason = reason
         self.body = body
         self.data = data
         self.headers = None
 
         if http_resp:
-            if self.status is None:
-                self.status = http_resp.status
+            if self.status_code is None:
+                self.status_code = http_resp.status_code
             if self.reason is None:
                 self.reason = http_resp.reason
             if self.body is None:
                 try:
-                    self.body = http_resp.data.decode('utf-8')
+                    self.body = http_resp.data.decode("utf-8")
                 except Exception:
                     pass
             self.headers = http_resp.getheaders()
 
     @classmethod
     def from_response(
-        cls, 
-        *, 
-        http_resp, 
-        body: Optional[str], 
+        cls,
+        *,
+        http_resp,
+        body: Optional[str],
         data: Optional[Any],
     ) -> Self:
-        if http_resp.status == 400:
+        if http_resp.status_code == 400:
             raise BadRequestException(http_resp=http_resp, body=body, data=data)
 
-        if http_resp.status == 401:
+        if http_resp.status_code == 401:
             raise UnauthorizedException(http_resp=http_resp, body=body, data=data)
 
-        if http_resp.status == 403:
+        if http_resp.status_code == 403:
             raise ForbiddenException(http_resp=http_resp, body=body, data=data)
 
-        if http_resp.status == 404:
+        if http_resp.status_code == 404:
             raise NotFoundException(http_resp=http_resp, body=body, data=data)
 
-        if 500 <= http_resp.status <= 599:
+        if 500 <= http_resp.status_code <= 599:
             raise ServiceException(http_resp=http_resp, body=body, data=data)
         raise ApiException(http_resp=http_resp, body=body, data=data)
 
     def __str__(self):
         """Custom error messages for exception"""
-        error_message = "({0})\n"\
-                        "Reason: {1}\n".format(self.status, self.reason)
+        error_message = "({0})\n" "Reason: {1}\n".format(self.status_code, self.reason)
         if self.headers:
-            error_message += "HTTP response headers: {0}\n".format(
-                self.headers)
+            error_message += "HTTP response headers: {0}\n".format(self.headers)
 
         if self.data or self.body:
             error_message += "HTTP response body: {0}\n".format(self.data or self.body)

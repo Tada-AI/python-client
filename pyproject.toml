@@ -1,16 +1,16 @@
 [tool.poetry]
 name = "tada_ai"
-version = "1.0.0"
+version = "0.1.0"
 description = "Tada AI API"
 authors = ["OpenAPI Generator Community <team@openapitools.org>"]
 license = "NoLicense"
 readme = "README.md"
-repository = "https://github.com/GIT_USER_ID/GIT_REPO_ID"
+repository = "https://github.com/Tada-AI/python-client"
 keywords = ["OpenAPI", "OpenAPI-Generator", "Tada AI API"]
 include = ["tada_ai/py.typed"]
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.8"
 
 urllib3 = ">= 1.25.3"
 python-dateutil = ">=2.8.2"
@@ -33,11 +33,7 @@ build-backend = "setuptools.build_meta"
 extension-pkg-whitelist = "pydantic"
 
 [tool.mypy]
-files = [
-  "tada_ai",
-  #"test",  # auto-generated tests
-  "tests", # hand-written tests
-]
+files = ["tada_ai", "tests"]
 # TODO: enable "strict" once all these individual checks are passing
 # strict = true
 

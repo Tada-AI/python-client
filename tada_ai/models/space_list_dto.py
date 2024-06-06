@@ -17,27 +17,25 @@ import pprint
 import re  # noqa: F401
 import json
 
-from pydantic import BaseModel, ConfigDict, StrictStr
+from pydantic import BaseModel, ConfigDict
 from typing import Any, ClassVar, Dict, List
-from tada_ai.models.search_record_chunk import SearchRecordChunk
+from tada_ai.models.space import Space
 from typing import Optional, Set
 from typing_extensions import Self
 
-
-class SearchResultDto(BaseModel):
+class SpaceListDto(BaseModel):
     """
-    SearchResultDto
-    """  # noqa: E501
-
-    id: StrictStr
-    chunks: List[SearchRecordChunk]
-    __properties: ClassVar[List[str]] = ["id", "chunks"]
+    SpaceListDto
+    """ # noqa: E501
+    data: List[Space]
+    __properties: ClassVar[List[str]] = ["data"]
 
     model_config = ConfigDict(
         populate_by_name=True,
         validate_assignment=True,
         protected_namespaces=(),
     )
+
 
     def to_str(self) -> str:
         """Returns the string representation of the model using alias"""
@@ -50,7 +48,7 @@ class SearchResultDto(BaseModel):
 
     @classmethod
     def from_json(cls, json_str: str) -> Optional[Self]:
-        """Create an instance of SearchResultDto from a JSON string"""
+        """Create an instance of SpaceListDto from a JSON string"""
         return cls.from_dict(json.loads(json_str))
 
     def to_dict(self) -> Dict[str, Any]:
@@ -63,39 +61,35 @@ class SearchResultDto(BaseModel):
           were set at model initialization. Other fields with value `None`
           are ignored.
         """
-        excluded_fields: Set[str] = set([])
+        excluded_fields: Set[str] = set([
+        ])
 
         _dict = self.model_dump(
             by_alias=True,
             exclude=excluded_fields,
             exclude_none=True,
         )
-        # override the default output from pydantic by calling `to_dict()` of each item in chunks (list)
+        # override the default output from pydantic by calling `to_dict()` of each item in data (list)
         _items = []
-        if self.chunks:
-            for _item in self.chunks:
+        if self.data:
+            for _item in self.data:
                 if _item:
                     _items.append(_item.to_dict())
-            _dict["chunks"] = _items
+            _dict['data'] = _items
         return _dict
 
     @classmethod
     def from_dict(cls, obj: Optional[Dict[str, Any]]) -> Optional[Self]:
-        """Create an instance of SearchResultDto from a dict"""
+        """Create an instance of SpaceListDto from a dict"""
         if obj is None:
             return None
 
         if not isinstance(obj, dict):
             return cls.model_validate(obj)
 
-        _obj = cls.model_validate(
-            {
-                "id": obj.get("id"),
-                "chunks": (
-                    [SearchRecordChunk.from_dict(_item) for _item in obj["chunks"]]
-                    if obj.get("chunks") is not None
-                    else None
-                ),
-            }
-        )
+        _obj = cls.model_validate({
+            "data": [Space.from_dict(_item) for _item in obj["data"]] if obj.get("data") is not None else None
+        })
         return _obj
+
+
