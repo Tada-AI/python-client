@@ -17,7 +17,7 @@ Install the package directly
 
 ```sh
 # pip
-pip install git+https://github.com/Tada-AI/python-client.git
+pip install tada_ai
 ```
 
 ## Getting Started
