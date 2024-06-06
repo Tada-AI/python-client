@@ -1,8 +1,11 @@
 # Tada AI Python Client
 
-Tada is makes doing RAG over documents easy.
+[Tada](https://www.tadatoday.ai/docs/what-we-do) makes doing RAG over documents easy. With a few API calls, you can
 
-API for access Tada resources
+1. Perform layout analysis on hundreds of pages of PDF, Word, and other documents
+1. Index the content alongside the layout metadata
+1. Search and generate markdown for queries
+1. Reindex results
 
 ## Requirements
 
