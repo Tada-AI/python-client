@@ -55,21 +55,23 @@ class TadaAIClient(BaseService):
         if reranker == False:
             rerankerOptions = None
         elif reranker == True:
-            rerankerOptions = RerankerOptions(useReranker=True)
+            rerankerOptions = RerankerOptions(use_reranker=True)
         else:
             rerankerOptions = reranker
 
         input = SearchQueryInput(
             prompt=prompt,
-            spaceId=space_id,
+            space_id=space_id,
             reranker=rerankerOptions,
-            chunkOptions=chunks,
+            chunk_options=chunks,
         )
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"ApiKey {self.api_key}",
         }
-        response = requests.post(url, json=input.model_dump(), headers=headers)
+        response = requests.post(
+            url, json=input.model_dump(by_alias=True), headers=headers
+        )
         if not response.ok:
             raise ApiException.from_response(
                 http_resp=response, body=response.text, data=None
