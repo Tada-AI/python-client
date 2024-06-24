@@ -4,6 +4,7 @@ import typing
 import requests
 from tada_ai.exceptions import ApiException
 from tada_ai.models.chunk_options import ChunkOptions
+from tada_ai.models.content_blocks import RootContentBlock
 from tada_ai.models.search_query_input import SearchQueryInput
 from tada_ai.models.reranker_options import (
     RerankerOptions,
@@ -134,6 +135,18 @@ class SpaceFileService(BaseService):
             )
 
         return SpaceFile.model_validate_json(response.text)
+
+    def content_blocks(self, space_file_id: str):
+        url = self._url("space-files", space_file_id, "content-blocks")
+        headers = {"Authorization": f"ApiKey {self.api_key}"}
+        response = requests.get(url, headers=headers)
+
+        if not response.ok:
+            raise ApiException.from_response(
+                http_resp=response, body=response.text, data=None
+            )
+
+        return RootContentBlock.model_validate_json(response.text)
 
 
 class SpaceService(BaseService):
