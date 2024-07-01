@@ -105,7 +105,7 @@ class SpaceFileService(BaseService):
         return SpaceFile.model_validate_json(response.text)
 
     def list(self, space_id: str):
-        url = self._url("spaces", space_id)
+        url = self._url("spaces", space_id, "files")
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"ApiKey {self.api_key}",
@@ -184,7 +184,6 @@ class SpaceService(BaseService):
             "Content-Type": "application/json",
             "Authorization": f"ApiKey {self.api_key}",
         }
-        print(url, headers)
         response = requests.get(url, headers=headers)
         if not response.ok:
             raise ApiException.from_response(
