@@ -27,3 +27,4 @@ class SearchQueryInput(ApiModel):
     space_id: Optional[StrictStr] = Field(default=None)
     chunk_options: Optional[ChunkOptions] = Field(default=None)
     reranker: Optional[RerankerOptions] = Field(default=None)
+    file_ids: Optional[list[str]] = Field(default=None)

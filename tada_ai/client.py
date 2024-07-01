@@ -50,6 +50,7 @@ class TadaAIClient(BaseService):
         space_id: str | None = None,
         reranker: RerankerOptions | bool = True,
         chunks: Optional[ChunkOptions] = None,
+        file_ids: Optional[list[str]] = None,
     ):
         url = self._url("search")
 
@@ -65,6 +66,7 @@ class TadaAIClient(BaseService):
             space_id=space_id,
             reranker=rerankerOptions,
             chunk_options=chunks,
+            file_ids=file_ids,
         )
         headers = {
             "Content-Type": "application/json",
