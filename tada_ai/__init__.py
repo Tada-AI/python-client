@@ -9,7 +9,7 @@
 """  # noqa: E501
 
 
-__version__ = "0.3.1"
+__version__ = "0.4.0"
 
 from tada_ai.client import TadaAIClient
 
