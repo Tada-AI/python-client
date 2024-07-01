@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tada_ai"
-version = "0.3.0"
+version = "0.3.1"
 description = "Tada AI API"
 authors = ["Tada AI <suport@tadatoday.ai>"]
 license = "MIT"
